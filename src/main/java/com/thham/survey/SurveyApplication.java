@@ -1,13 +1,13 @@
-package com.thham.member;
+package com.thham.survey;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MemberServiceApplication {
+public class SurveyApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MemberServiceApplication.class, args);
+		SpringApplication.run(SurveyApplication.class, args);
 	}
 
 }

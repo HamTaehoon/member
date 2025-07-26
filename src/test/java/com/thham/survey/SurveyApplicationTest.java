@@ -1,13 +1,12 @@
-package com.thham.member;
+package com.thham.survey;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MemberServiceApplicationTests {
+public class SurveyApplicationTest {
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    public void contextLoads() {
+    }
 }

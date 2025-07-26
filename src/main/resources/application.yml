@@ -14,3 +14,14 @@ spring:
   threads:
     virtual:
       enabled: true
+jwt:
+  secret: q8WvX9zK3mP7rT2yN6cF8jL4hQ5wR1vB
+#  access-token-expiration: 20000 # 20초
+  access-token-expiration: 1800000 # 30분
+  refresh-token-expiration: 3600000
+  #refresh-token-rotation-expiration: 86400000
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+    com.thham.survey: DEBUG

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/v1/api/admin/members")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "basicAuth")
 public class AdminController {
 
     private final MemberService memberService;
@@ -32,12 +34,6 @@ public class AdminController {
     }
 
     @Operation(summary = "Update member password or address", description = "Updates password, address, or both for a member")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Member successfully updated"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access"),
-            @ApiResponse(responseCode = "404", description = "Member not found")
-    })
     @PatchMapping("/{id}")
     public ResponseEntity<MemberDto> updateMember(
             @Parameter(description = "Member ID", example = "1") @PathVariable Long id,
@@ -46,11 +42,6 @@ public class AdminController {
     }
 
     @Operation(summary = "Delete a member", description = "Deletes a member by ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Member successfully deleted"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access"),
-            @ApiResponse(responseCode = "404", description = "Member not found")
-    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(
             @Parameter(description = "Member ID", example = "1") @PathVariable Long id) {

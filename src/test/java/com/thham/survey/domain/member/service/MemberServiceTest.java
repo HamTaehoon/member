@@ -25,6 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.thham.survey.common.util.jwt.JwtUtil;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
@@ -36,6 +41,9 @@ class MemberServiceTest {
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @InjectMocks
     private MemberService memberService;
@@ -252,5 +260,154 @@ class MemberServiceTest {
         assertEquals("Member not found", exception.getMessage());
         verify(memberRepository).existsById(1L);
         verify(memberRepository, never()).deleteById(any());
+    }
+
+    @Test
+    @DisplayName("회원 상세 정보 조회 성공 테스트 - 본인 계정")
+    void getMemberDetails_Success_SameAccount() {
+        // Given
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn("thham");
+        SecurityContextHolder.setContext(securityContext);
+
+        when(memberRepository.findByAccount("thham")).thenReturn(Optional.of(member));
+
+        // When
+        MemberDto result = memberService.getMemberDetails("thham");
+
+        // Then
+        assertNotNull(result);
+        assertEquals("thham", result.account());
+        assertEquals("Taehoon Ham", result.name());
+        assertEquals("01012345678", result.phoneNumber());
+        assertEquals("서울특별시", result.address());
+        verify(memberRepository).findByAccount("thham");
+        verify(memberMapper, never()).memberToMemberDto(any());
+    }
+
+    @Test
+    @DisplayName("회원 상세 정보 조회 실패 테스트 - 다른 계정 접근")
+    void getMemberDetails_UnauthorizedAccount_ThrowsIllegalArgumentException() {
+        // Given
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn("otherUser");
+        SecurityContextHolder.setContext(securityContext);
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> memberService.getMemberDetails("thham"));
+        assertEquals("Access denied", exception.getMessage());
+        verify(memberRepository, never()).findByAccount(any());
+        verify(memberMapper, never()).memberToMemberDto(any());
+    }
+
+    @Test
+    @DisplayName("회원 상세 정보 조회 실패 테스트 - 존재하지 않는 계정")
+    void getMemberDetails_AccountNotFound_ThrowsIllegalArgumentException() {
+        // Given
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn("thham");
+        SecurityContextHolder.setContext(securityContext);
+
+        when(memberRepository.findByAccount("thham")).thenReturn(Optional.empty());
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> memberService.getMemberDetails("thham"));
+        assertEquals("Member not found", exception.getMessage());
+        verify(memberRepository).findByAccount("thham");
+        verify(memberMapper, never()).memberToMemberDto(any());
+    }
+
+    @Test
+    @DisplayName("로그인 성공 테스트")
+    void login_Success() {
+        // Given
+        when(memberRepository.findByAccount("thham")).thenReturn(Optional.of(member));
+        when(passwordEncoder.matches("password1!", "$2a$10$hashedPassword")).thenReturn(true);
+        when(jwtUtil.generateAccessToken("thham")).thenReturn("accessToken");
+
+        // When
+        String result = memberService.login(validDto);
+
+        // Then
+        assertEquals("accessToken", result);
+        verify(memberRepository).findByAccount("thham");
+        verify(passwordEncoder).matches("password1!", "$2a$10$hashedPassword");
+        verify(jwtUtil).generateAccessToken("thham");
+    }
+
+    @Test
+    @DisplayName("로그인 실패 테스트 - 잘못된 계정")
+    void login_InvalidAccount_ThrowsIllegalArgumentException() {
+        // Given
+        when(memberRepository.findByAccount("thham")).thenReturn(Optional.empty());
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> memberService.login(validDto));
+        assertEquals("Invalid account or password", exception.getMessage());
+        verify(memberRepository).findByAccount("thham");
+        verify(passwordEncoder, never()).matches(any(), any());
+        verify(jwtUtil, never()).generateAccessToken(any());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 테스트 - 잘못된 비밀번호")
+    void login_InvalidPassword_ThrowsIllegalArgumentException() {
+        // Given
+        when(memberRepository.findByAccount("thham")).thenReturn(Optional.of(member));
+        when(passwordEncoder.matches("wrongPassword", "$2a$10$hashedPassword")).thenReturn(false);
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> memberService.login(new MemberDto(
+                        "thham",
+                        "wrongPassword",
+                        "Taehoon Ham",
+                        "1234567890123",
+                        "01012345678",
+                        "서울특별시 OO구 OO로"
+                )));
+        assertEquals("Invalid account or password", exception.getMessage());
+        verify(memberRepository).findByAccount("thham");
+        verify(passwordEncoder).matches("wrongPassword", "$2a$10$hashedPassword");
+        verify(jwtUtil, never()).generateAccessToken(any());
+    }
+
+    @Test
+    @DisplayName("리프레시 토큰 생성 성공 테스트")
+    void generateRefreshToken_Success() {
+        // Given
+        when(memberRepository.findByAccount("thham")).thenReturn(Optional.of(member));
+        when(jwtUtil.generateRefreshToken("thham")).thenReturn("refreshToken");
+
+        // When
+        String result = memberService.generateRefreshToken(validDto);
+
+        // Then
+        assertEquals("refreshToken", result);
+        verify(memberRepository).findByAccount("thham");
+        verify(jwtUtil).generateRefreshToken("thham");
+    }
+
+    @Test
+    @DisplayName("리프레시 토큰 생성 실패 테스트 - 잘못된 계정")
+    void generateRefreshToken_InvalidAccount_ThrowsIllegalArgumentException() {
+        // Given
+        when(memberRepository.findByAccount("thham")).thenReturn(Optional.empty());
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> memberService.generateRefreshToken(validDto));
+        assertEquals("Invalid account", exception.getMessage());
+        verify(memberRepository).findByAccount("thham");
+        verify(jwtUtil, never()).generateRefreshToken(any());
     }
 }

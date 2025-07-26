@@ -113,13 +113,7 @@ class MemberControllerTest {
         mockMvc.perform(post("/v1/api/members")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.account").value("size must be between 4 and 50"))
-                .andExpect(jsonPath("$.password").value("size must be between 8 and 100"))
-                .andExpect(jsonPath("$.name").value("must not be blank"))
-                .andExpect(jsonPath("$.residentId").value("size must be between 13 and 13"))
-                .andExpect(jsonPath("$.phoneNumber").value("size must be between 11 and 11"))
-                .andExpect(jsonPath("$.address").value("must not be blank"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test

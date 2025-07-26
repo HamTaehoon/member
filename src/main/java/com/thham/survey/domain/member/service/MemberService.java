@@ -1,5 +1,6 @@
 package com.thham.survey.domain.member.service;
 
+import com.thham.survey.common.util.jwt.JwtUtil;
 import com.thham.survey.controller.admin.model.UpdateMemberRequest;
 import com.thham.survey.domain.member.dto.MemberDto;
 import com.thham.survey.domain.member.dto.MemberMapper;
@@ -8,6 +9,7 @@ import com.thham.survey.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public MemberDto registerMember(MemberDto dto) {
@@ -72,5 +75,38 @@ public class MemberService {
             throw new IllegalArgumentException("Member not found");
         }
         memberRepository.deleteById(id);
+    }
+
+    public MemberDto getMemberDetails(String accountId) {
+        String authenticatedUsername = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!authenticatedUsername.equals(accountId)) {
+//            throw new IllegalArgumentException("Access denied: Can only view own details");
+            throw new IllegalArgumentException("Access denied");
+        }
+
+        Member member = memberRepository.findByAccount(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+        String topLevelAddress = member.getAddress().split(" ")[0];
+        return MemberDto.builder()
+                .account(member.getAccount())
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .address(topLevelAddress)
+                .build();
+    }
+
+    public String login(MemberDto dto) {
+        Member member = memberRepository.findByAccount(dto.account())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid account or password"));
+        if (!passwordEncoder.matches(dto.password(), member.getPassword())) {
+            throw new IllegalArgumentException("Invalid account or password");
+        }
+        return jwtUtil.generateAccessToken(member.getAccount());
+    }
+
+    public String generateRefreshToken(MemberDto dto) {
+        Member member = memberRepository.findByAccount(dto.account())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid account"));
+        return jwtUtil.generateRefreshToken(member.getAccount());
     }
 }

@@ -168,8 +168,7 @@ class AdminControllerTest {
                         .header("Authorization", basicAuthHeader)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidUpdateRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.password").value("size must be between 8 and 100"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test

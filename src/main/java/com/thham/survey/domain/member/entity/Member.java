@@ -41,4 +41,12 @@ public class Member {
 
     @NotBlank
     private String address;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

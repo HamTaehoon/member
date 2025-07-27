@@ -46,7 +46,7 @@
 
 1.  **클론**
     ```bash
-    git clone [https://github.com/HamTaehoon/member.git](https://github.com/HamTaehoon/member.git)
+    git clone https://github.com/HamTaehoon/member.git
     ```
 2.  **의존성 설치**
     ```bash

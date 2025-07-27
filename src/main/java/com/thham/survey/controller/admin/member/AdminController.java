@@ -1,12 +1,10 @@
-package com.thham.survey.controller.admin;
+package com.thham.survey.controller.admin.member;
 
-import com.thham.survey.controller.admin.model.UpdateMemberRequest;
+import com.thham.survey.controller.admin.member.model.UpdateMemberRequest;
 import com.thham.survey.domain.member.dto.MemberDto;
 import com.thham.survey.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

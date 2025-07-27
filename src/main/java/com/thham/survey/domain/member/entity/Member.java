@@ -9,6 +9,8 @@ import lombok.*;
 @Table(name = "member", uniqueConstraints = {
         @UniqueConstraint(columnNames = "account"),
         @UniqueConstraint(columnNames = "residentId")
+}, indexes = {
+        @Index(name = "idx_birth_year", columnList = "birthYear")
 })
 @Getter
 @Builder
@@ -23,6 +25,7 @@ public class Member {
     @Size(min = 4, max = 50)
     private String account;
 
+    @Setter
     @NotBlank
     @Size(min = 8, max = 100)
     private String password;
@@ -39,14 +42,9 @@ public class Member {
     @Size(min = 11, max = 11)
     private String phoneNumber;
 
+    @Setter
     @NotBlank
     private String address;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    private int birthYear;
 }

@@ -16,12 +16,28 @@ spring:
       enabled: true
 jwt:
   secret: q8WvX9zK3mP7rT2yN6cF8jL4hQ5wR1vB
-#  access-token-expiration: 20000 # 20초
+  #  access-token-expiration: 20000 # 20초
   access-token-expiration: 1800000 # 30분
   refresh-token-expiration: 3600000
   #refresh-token-rotation-expiration: 86400000
+
+kakao:
+  api:
+    url: http://localhost:8081
+    username: autoever
+    password: 1234
+sms:
+  api:
+    url: http://localhost:8082
+    username: autoever
+    password: 5678
+
 logging:
   level:
     root: INFO
     org.springframework.security: INFO
     com.thham.survey: DEBUG
+
+message:
+  page-size: 1000
+  age-groups: 0~10,20s,30s,40s,50s,60s,70s+

@@ -1,7 +1,7 @@
 package com.thham.survey.domain.member.service;
 
 import com.thham.survey.common.util.jwt.JwtUtil;
-import com.thham.survey.controller.admin.model.UpdateMemberRequest;
+import com.thham.survey.controller.admin.member.model.UpdateMemberRequest;
 import com.thham.survey.domain.member.dto.MemberDto;
 import com.thham.survey.domain.member.dto.MemberMapper;
 import com.thham.survey.domain.member.entity.Member;
@@ -35,13 +35,18 @@ public class MemberService {
                 .filter(residentId -> !memberRepository.existsByResidentId(residentId))
                 .orElseThrow(() -> new IllegalArgumentException("Resident ID already exists"));
 
+        String yearPrefix = dto.residentId().substring(0, 2);
+        int year = Integer.parseInt(yearPrefix);
+        int birthYear = year >= 0 && year <= 25 ? 2000 + year : 1900 + year;
+
         Member savedMember = memberRepository.save(Member.builder()
                 .account(dto.account())
-                        .password(passwordEncoder.encode(dto.password()))
-                        .name(dto.name())
-                        .residentId(dto.residentId())
-                        .phoneNumber(dto.phoneNumber())
-                        .address(dto.address())
+                .password(passwordEncoder.encode(dto.password()))
+                .name(dto.name())
+                .residentId(dto.residentId())
+                .phoneNumber(dto.phoneNumber())
+                .address(dto.address())
+                .birthYear(birthYear)
                 .build());
 
         return MemberDto.builder()

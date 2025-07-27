@@ -1,6 +1,6 @@
 package com.thham.survey.domain.member.service;
 
-import com.thham.survey.controller.admin.model.UpdateMemberRequest;
+import com.thham.survey.controller.admin.member.model.UpdateMemberRequest;
 import com.thham.survey.domain.member.dto.MemberDto;
 import com.thham.survey.domain.member.dto.MemberMapper;
 import com.thham.survey.domain.member.entity.Member;

@@ -2,7 +2,8 @@ package com.thham.survey.controller.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thham.survey.common.exception.GlobalExceptionHandler;
-import com.thham.survey.controller.admin.model.UpdateMemberRequest;
+import com.thham.survey.controller.admin.member.AdminController;
+import com.thham.survey.controller.admin.member.model.UpdateMemberRequest;
 import com.thham.survey.domain.member.dto.MemberDto;
 import com.thham.survey.domain.member.dto.MemberMapper;
 import com.thham.survey.domain.member.service.MemberService;

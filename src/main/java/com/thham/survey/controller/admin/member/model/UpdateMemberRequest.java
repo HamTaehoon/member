@@ -1,4 +1,4 @@
-package com.thham.survey.controller.admin.model;
+package com.thham.survey.controller.admin.member.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;

@@ -90,7 +90,7 @@ public class MessageAsyncHandler {
     }
 
     private void sendMessage(AgeGroupMemberDto member, String messageContent) {
-        String message = member.getName() + "님, 안녕하세요. 현대 오토에버입니다.\n" + messageContent;
+        String message = member.getName() + "님, 안녕하세요.\n" + messageContent;
 
         log.debug("KakaoTalk bucket available tokens: {}", kakaoTalkBucket.getAvailableTokens());
         try {

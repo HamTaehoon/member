@@ -31,10 +31,10 @@ public class MessageClient {
             RestClient restClient,
             @Value("${kakao.api.url:http://localhost:8081}") String kakaoApiUrl,
             @Value("${sms.api.url:http://localhost:8082}") String smsApiUrl,
-            @Value("${kakao.api.username:autoever}") String kakaoUsername,
-            @Value("${kakao.api.password:1234}") String kakaoPassword,
-            @Value("${sms.api.username:autoever}") String smsUsername,
-            @Value("${sms.api.password:5678}") String smsPassword
+            @Value("${kakao.api.username}") String kakaoUsername,
+            @Value("${kakao.api.password}") String kakaoPassword,
+            @Value("${sms.api.username}") String smsUsername,
+            @Value("${sms.api.password}") String smsPassword
     ) {
         this.restClient = restClient;
         this.kakaoApiUrl = kakaoApiUrl;

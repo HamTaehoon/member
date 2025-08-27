@@ -24,12 +24,12 @@ jwt:
 kakao:
   api:
     url: http://localhost:8081
-    username: autoever
+    username: name
     password: 1234
 sms:
   api:
     url: http://localhost:8082
-    username: autoever
+    username: name
     password: 5678
 
 logging:
